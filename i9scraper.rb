@@ -1,8 +1,6 @@
-require 'nokogiri'
-require 'open-uri'
 require 'csv'
 require 'mailgun'
-require_relative 'event_scraper.rb'
+require_relative 'event_scraper'
 
 
 #email client
@@ -13,13 +11,15 @@ end
 @mailgun = Mailgun()
 
 #initialize nokogiri
-event = EventScraper.new('http://inspire9.com/events')
+events = EventScraper.new('http://inspire9.com/events')
 
 #csv
 CSV.open("i9_events.csv", "w") do |csv|
-  csv << ["**Events this week at Inspire9**"]
-	event.get_event.each do |event|
-    csv << [event]
+  csv << ["**Events coming up at Inspire9**", "Time"]
+	events.get_event.each do |event|
+    csv << [event.css('h3.summary').first.content,
+            event.css('.dtstart').first.content,
+            event.css('.vevent').link]
   end
 end
 
