@@ -16,10 +16,11 @@ events = EventScraper.new('http://inspire9.com/events')
 #csv
 CSV.open("i9_events.csv", "w") do |csv|
   csv << ["**Events coming up at Inspire9**"]
-  csv << ["Event","Date & Time", "Link to event"]
+  csv << ["Event","Date","Time", "Link to event"]
 	events.get_event.each do |event|
     csv << [event.css('h3.summary').first.content,
-            event.css('.dtstart').first["datetime"],
+            event.css('.dtstart').first["datetime"].split.delete_at(0),
+            event.css('.dtstart').first["datetime"].split.delete_at(1),
             event.css('a.url').first["href"]]
   end
 end
